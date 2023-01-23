@@ -1,24 +1,24 @@
+import { useEffect, useMemo, useState } from "react";
 import {
-  Box,
-  GridItem,
   SimpleGrid,
+  GridItem,
   Heading,
+  Box,
   Button,
-  Input,
-  Divider,
-  Text,
   useMediaQuery,
+  Divider,
+  Input,
+  Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { LargeRecipeCard } from "../../components/LargeRecipeCard/LargeRecipeCard";
 import { SmallRecipeCard } from "../../components/SmallRecipeCard/SmallRecipeCard";
+import { LargeRecipeCard } from "../../components/LargeRecipeCard/LargeRecipeCard";
+import { debounce } from "lodash";
 import { Recipe } from "../../interfaces/Recipe";
 
 export const Home = () => {
   const pageHistory = useHistory();
   const [isLarge] = useMediaQuery("(max-width: 1440px)");
-
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   const populatePage = async () => {
@@ -31,6 +31,20 @@ export const Home = () => {
 
   useEffect(() => {
     populatePage();
+  }, []);
+
+  const onSearchInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    fetch(`http://localhost:3080/api/recipes?search=${e.target.value}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setRecipes(data);
+      });
+  };
+
+  const debouncedChangeHandler = useMemo(() => {
+    return debounce(onSearchInputChange, 300);
   }, []);
 
   return (
@@ -47,7 +61,7 @@ export const Home = () => {
         mt={2}
         id="searchBar"
         placeholder="Search By Ingredient or Name"
-        onChange={() => console.log("Searched Something")}
+        onChange={debouncedChangeHandler}
       />
       <Divider my={2} />
       {recipes.length > 0 ? (
