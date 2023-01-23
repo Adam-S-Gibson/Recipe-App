@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Recipe {
+  id           String        @id @default(uuid())
+  name         String
+  time_to_make String
+  prep_time    String
+  ingredients  Ingredients[]
+  steps        Steps[]
+  created_at   DateTime      @default(now())
+}
+
+model Ingredients {
+  id       String  @id @default(uuid())
+  name     String
+  amount   String
+  Recipe   Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String?
+}
+
+model Steps {
+  id          String  @id @default(uuid())
+  description String
+  Recipe      Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId    String?
+}

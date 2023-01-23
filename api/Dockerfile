@@ -8,4 +8,8 @@ RUN npm i
 
 EXPOSE 3080
 
+RUN ["npx", "prisma", "generate"]
+
+
+
 CMD ["npm", "run", "dev"]
