@@ -25,6 +25,7 @@ describe("Express API tests", () => {
   it(`Should be able to get all entries`, () => {
     cy.request(`http://localhost:3080/api/recipes`).then((res) => {
       expect(res.status).to.equal(200);
+      expect(res.body.length).to.greaterThan(0);
     });
   });
 
@@ -32,7 +33,7 @@ describe("Express API tests", () => {
     cy.request(`http://localhost:3080/api/recipes`).then((res) => {
       cy.request(`http://localhost:3080/api/recipes/${res.body[0].id}`).then(
         (res) => {
-          expect(res.status).to.equal(200);
+          expect(res.body.name).to.equal("apple pie");
         }
       );
     });
