@@ -4,6 +4,7 @@ import express, { NextFunction, Request, Response } from "express";
 
 import logger from "./config/logger";
 import config from "./config/config";
+import router from "./services/recipe.service";
 
 const app = express();
 const NAMESPACE = "Server";
@@ -28,18 +29,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(urlencoded({ extended: false }));
 app.use(json());
 
-app.get("/recipes", (req: Request, res: Response) => {
-  res.status(200).send("");
-});
-app.get("/recipes/:id", (req: Request, res: Response) => {
-  res.status(200).send("");
-});
-app.post("/recipes", (req: Request, res: Response) => {
-  res.status(200).send("");
-});
-app.delete("/recipes/:id", (req: Request, res: Response) => {
-  res.status(200).send("");
-});
+app.use("/api", router);
 
 app.listen(config.server.port, () =>
   console.log(`Listening on port ${config.server.port}`)
