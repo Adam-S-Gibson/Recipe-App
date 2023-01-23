@@ -26,7 +26,6 @@ export const Home = () => {
       .then((response) => response.json())
       .then((data) => {
         setRecipes(data);
-        console.log(recipes);
       });
   };
 
