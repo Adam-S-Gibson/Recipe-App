@@ -1,19 +1,41 @@
 import {
   Box,
-  Button,
   Divider,
   Flex,
   Heading,
-  ListItem,
   Spacer,
-  UnorderedList,
   Text,
+  Button,
+  SimpleGrid,
+  GridItem,
+  ListItem,
   OrderedList,
+  Image,
+  UnorderedList,
 } from "@chakra-ui/react";
-import { useHistory } from "react-router-dom";
+import { faStar, faCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { DeleteButtonAndModal } from "../../components/DeleteButtonAndModal/DeleteButtonAndModal";
+import { Recipe } from "../../interfaces/Recipe";
 
 export const ViewRecipe = () => {
   const pageHistory = useHistory();
+  const { id } = useParams<{ id: string }>();
+  const [recipe, setRecipe] = useState<Recipe>();
+
+  const populatePage = async (id: string) => {
+    fetch(`http://localhost:3080/api/recipes/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setRecipe(data);
+      });
+  };
+
+  useEffect(() => {
+    populatePage(id);
+  }, [id]);
 
   return (
     <Box>
@@ -23,49 +45,80 @@ export const ViewRecipe = () => {
         gap="2"
         paddingBottom="2"
       >
-        <Heading>Your Recipe</Heading>
-        <Spacer />
+        <Heading size="xl">{recipe?.name}</Heading>
+        <Spacer></Spacer>
         <Button onClick={() => pageHistory.push("/")}>Back</Button>
       </Flex>
-      <Divider />
-      <Box>
-        <Heading size="lg">Ingredients</Heading>
-        <UnorderedList>
-          <ListItem>
-            <Text casing="capitalize">Ingredient</Text>
-          </ListItem>
-          <ListItem>
-            <Text casing="capitalize">Ingredient</Text>
-          </ListItem>
-          <ListItem>
-            <Text casing="capitalize">Ingredient</Text>
-          </ListItem>
-          <ListItem>
-            <Text casing="capitalize">Ingredient</Text>
-          </ListItem>
-        </UnorderedList>
-        <Divider my={2} />
-        <Heading my={4} size="lg">
-          Instructions
-        </Heading>
-        <OrderedList>
-          <ListItem>
-            <Text casing="capitalize">Ingredient</Text>
-          </ListItem>
-          <ListItem>
-            <Text casing="capitalize">Ingredient</Text>
-          </ListItem>
-          <ListItem>
-            <Text casing="capitalize">Ingredient</Text>
-          </ListItem>
-          <ListItem>
-            <Text casing="capitalize">Ingredient</Text>
-          </ListItem>
-        </OrderedList>
-      </Box>
-      <Button float="right" colorScheme="red">
-        Delete
-      </Button>
+      <Divider mb={5} />
+
+      {recipe ? (
+        <Box>
+          <SimpleGrid
+            alignItems="center"
+            justifyContent="center"
+            columns={[1, null, 3]}
+          >
+            <Image
+              maxW={150}
+              src="https://media.istockphoto.com/id/1185879263/vector/recipe-book-hand-drawn-cover-vector-illustration.jpg?s=612x612&w=0&k=20&c=LMU-L5FcyKYdzPdB_ZNc0mQlFCwMyJM4iI94ZzBfpQM="
+            />
+            <GridItem colSpan={2}>
+              <Text mt={2}>
+                <FontAwesomeIcon style={{ marginRight: 3 }} icon={faStar} />{" "}
+                Prep Time: {recipe?.prep_time} Mins
+              </Text>
+              <Text mt={2}>
+                <FontAwesomeIcon style={{ marginRight: 7 }} icon={faStar} />
+                Cooking Time: {recipe?.time_to_make} Mins
+              </Text>
+            </GridItem>
+          </SimpleGrid>
+          <Divider my={2} />
+
+          <Heading my={4} size="lg">
+            Ingredients & Measurements
+          </Heading>
+          <SimpleGrid>
+            <UnorderedList listStyleType="none" ml="0">
+              {recipe?.ingredients.map((item, index) => (
+                <GridItem key={`${item.name}_${index}`} colSpan={1}>
+                  <ListItem>
+                    <Flex gap={3}>
+                      <Text casing="capitalize">
+                        {" "}
+                        <FontAwesomeIcon
+                          style={{
+                            marginRight: 4,
+                            marginBottom: 4,
+                            fontSize: 6,
+                          }}
+                          icon={faCircle}
+                        />{" "}
+                        {item.name}
+                      </Text>{" "}
+                      <Text casing="capitalize">{item.amount}</Text>
+                    </Flex>
+                  </ListItem>
+                </GridItem>
+              ))}
+            </UnorderedList>
+          </SimpleGrid>
+          <Divider my={2} />
+          <Heading my={4} size="lg">
+            How To Make
+          </Heading>
+          <OrderedList mt={2}>
+            {recipe?.steps.map((item, index) => (
+              <ListItem my={2} key={`${item.description}_${index}`}>
+                {item.description}
+              </ListItem>
+            ))}
+          </OrderedList>
+        </Box>
+      ) : (
+        <Text>Loading</Text>
+      )}
+      <DeleteButtonAndModal id={id} />
     </Box>
   );
 };
