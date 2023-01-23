@@ -12,15 +12,9 @@ import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faStar as SolidStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useHistory } from "react-router-dom";
+import { Card } from "../../interfaces/Card";
 
-interface Card {
-  title: string;
-  rating: number;
-  timeToCook: string;
-  id: string;
-}
-
-export const RecipeCard = ({ title, rating, timeToCook, id }: Card) => {
+export const SmallRecipeCard = ({ title, rating, timeToCook, id }: Card) => {
   const pageHistory = useHistory();
 
   return (
