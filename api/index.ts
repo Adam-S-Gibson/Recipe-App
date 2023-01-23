@@ -1,42 +1,46 @@
 import { json, urlencoded } from "body-parser";
 import cors from "cors";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
+
+import logger from "./config/logger";
+import config from "./config/config";
 
 const app = express();
+const NAMESPACE = "Server";
 
-export class Application {
-  constructor() {
-    this.setupApplicationSettings();
-    this.setupControllers();
-  }
+app.use(cors());
+app.use((req: Request, res: Response, next: NextFunction) => {
+  logger.info(
+    NAMESPACE,
+    `METHOD - [${req.method}], URL - [${req.url}], IP - [${req.socket.remoteAddress}]`
+  );
 
-  setupApplicationSettings() {
-    app.use(cors());
-    app.use(urlencoded({ extended: false }));
-    app.use(json());
-  }
+  res.on("finish", () => {
+    logger.info(
+      NAMESPACE,
+      `METHOD - [${req.method}], URL - [${req.url}], IP - [${req.socket.remoteAddress}], STATUS - [${res.statusCode}]`
+    );
+  });
 
-  listen() {
-    app.listen(3080, () => console.log("Listening on port 3080"));
-  }
+  next();
+});
 
-  setupControllers() {
-    app.get("/recipes", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
-    app.get("/recipes/:id", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
-    app.post("/recipes", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
-    app.delete("/recipes/:id", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
-    app;
-  }
-}
+app.use(urlencoded({ extended: false }));
+app.use(json());
 
-const application = new Application();
+app.get("/recipes", (req: Request, res: Response) => {
+  res.status(200).send("");
+});
+app.get("/recipes/:id", (req: Request, res: Response) => {
+  res.status(200).send("");
+});
+app.post("/recipes", (req: Request, res: Response) => {
+  res.status(200).send("");
+});
+app.delete("/recipes/:id", (req: Request, res: Response) => {
+  res.status(200).send("");
+});
 
-application.listen();
+app.listen(config.server.port, () =>
+  console.log(`Listening on port ${config.server.port}`)
+);
