@@ -22,3 +22,5 @@ e2e/cypress/videos
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+postgres-data/*

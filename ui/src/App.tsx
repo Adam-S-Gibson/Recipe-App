@@ -16,7 +16,7 @@ const App = () => {
       flexDirection="column"
       mt={5}
     >
-      <Header title="Sero Kitchen 🍽️" />
+      <Header title="Master Chef 🍽️" />
       <Router>
         <Box mt={10}>
           <Switch>
