@@ -7,7 +7,7 @@ interface HeaderProps {
 export const Header = ({ title }: HeaderProps) => {
   return (
     <Flex justify="center" align="center">
-      <ChakraHeader size="3xl" textAlign="center">
+      <ChakraHeader size="3xl" mt={2} textAlign="center">
         {title}
       </ChakraHeader>
     </Flex>
