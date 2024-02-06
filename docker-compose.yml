@@ -12,7 +12,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/prisma
     depends_on:
-    - postgres
+      - postgres
+
   recipe-book-ui:
     build:
       context: ./ui
@@ -25,7 +26,6 @@ services:
        - /usr/src/app/ui/node_modules
 
 ######## Other containers #########
-
   postgres:
     image: postgres:10.5
     container_name: postgres
@@ -37,6 +37,7 @@ services:
       - "5432:5432"
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
+
 volumes:
   postgres-data:
 

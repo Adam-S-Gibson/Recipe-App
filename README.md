@@ -16,7 +16,7 @@ This is a recipe app that allows you to save, search, delete, and find recipes y
 
 Open a terminal and run the following command to spin up the API and React UI
 
-```
+```bash
 make install docker
 ```
 
@@ -26,7 +26,7 @@ _Navigate to http://localhost:3000 to view the UI_
 
 Run the following command in a separate terminal (You must have your UI and API running)
 
-```
+```bash
 make test
 ```
 
