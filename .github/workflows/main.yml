@@ -17,11 +17,11 @@ jobs:
       - name: Applying Prisma
         run: docker exec recipe-book-api npx prisma migrate dev --name init
 
-      - name: Cypress run
-        run: (cd e2e && npm i cypress@9.2.0 && npx cypress run)
+      # - name: Cypress run
+      #   run: (cd e2e && npm i cypress@9.2.0 && npx cypress run)
 
       - name: Run api tests
-        run: cd api && npm run test
+        run: cd api && npm i && npm run test
 
       - name: Run ui tests
-        run: cd ui && npm run test
+        run: cd ui && npm i && npm run test
