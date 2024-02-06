@@ -11,21 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "14.x"
+
       - name: Start containers
         run: docker-compose -f "docker-compose.yml" up -d --build
 
       - name: Applying Prisma
         run: docker exec recipe-book-api npx prisma migrate dev --name init
 
-      # - name: Cypress run
-      #   run: (cd e2e && npm i cypress@9.2.0 && npx cypress run)
-
-      - name: Run api tests
-        run: cd api && npm ci && npm run test
-
-      - name: Run ui tests
-        run: cd ui && npm ci && npm run test
+      - name: Cypress run
+        run: (cd e2e && npm i cypress@9.2.0 && npx cypress run)
