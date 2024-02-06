@@ -2,24 +2,26 @@ name: CI Tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   Testing:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Start containers
-      run: docker-compose -f "docker-compose.yml" up -d --build
-      
-    - name: Applying Prisma
-      run: docker exec recipe-book-api npx prisma migrate dev --name init      
-    
-    - name: Cypress run
-      run: (cd e2e && npm i cypress@9.2.0 && npx cypress run)      
-      
-    - name: Run tests
-      run: docker exec recipe-book-api npm run test
-      run: docker exec recipe-book-ui npm run test
+      - uses: actions/checkout@v3
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" up -d --build
+
+      - name: Applying Prisma
+        run: docker exec recipe-book-api npx prisma migrate dev --name init
+
+      - name: Cypress run
+        run: (cd e2e && npm i cypress@9.2.0 && npx cypress run)
+
+      - name: Run api tests
+        run: docker exec recipe-book-api npm run test
+
+      - name: Run ui tests
+        run: docker exec recipe-book-ui npm run test
