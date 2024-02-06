@@ -17,7 +17,7 @@ import { faStar, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { DeleteButtonAndModal } from "../../components/DeleteButtonAndModal/DeleteButtonAndModal";
+import { DeleteButtonAndModal } from "../../components/DeleteButtonAndModal";
 import { Recipe } from "../../interfaces/Recipe";
 
 export const ViewRecipe = () => {

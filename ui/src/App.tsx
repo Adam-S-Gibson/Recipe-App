@@ -1,7 +1,7 @@
 import { Box, Grid, GridItem } from "@chakra-ui/react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
-import { Footer } from "./components/Footer/Footer";
-import { Header } from "./components/Header/Header";
+import { Footer } from "./components/Footer";
+import { Header } from "./components/Header";
 import { AddNewRecipe } from "./pages/AddNewRecipe/AddNewRecipe";
 import { Error } from "./pages/Error/Error";
 import { Home } from "./pages/Home/Home";

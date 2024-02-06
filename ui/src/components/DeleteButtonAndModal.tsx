@@ -29,7 +29,7 @@ export const DeleteButtonAndModal = ({ id }: DeleteButton) => {
         "Content-Type": "application/json",
       },
     })
-      .then((response) => {
+      .then(() => {
         pageHistory.push("/");
       })
       .catch((error) => console.error(error));
@@ -43,13 +43,19 @@ export const DeleteButtonAndModal = ({ id }: DeleteButton) => {
         float="right"
         colorScheme="red"
         onClick={onOpen}
+        aria-label="Remove Recipe Modal Button"
       >
         Remove Recipe
       </Button>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
+      <Modal
+        blockScrollOnMount={false}
+        isOpen={isOpen}
+        onClose={onClose}
+        aria-label="Delete Modal"
+      >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>Delete Recipe</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontWeight="bold" mb="1rem">
@@ -59,13 +65,20 @@ export const DeleteButtonAndModal = ({ id }: DeleteButton) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={onClose}
+              id="closeButton"
+              aria-label="Close Modal"
+            >
               Close
             </Button>
             <Button
               colorScheme="red"
               id="deleteButton"
               onClick={() => deleteRecipe(id)}
+              aria-label="Delete Recipe"
             >
               Delete
             </Button>

@@ -1,11 +1,17 @@
-import express, { Response, Request } from "express";
-import recipeController from "../controllers/recipe.controller";
+import express, { Response, Request, Router } from "express";
+import {
+  searchByNameOrIngredient,
+  getAllRecipes,
+  getRecipeById,
+  addNewRecipe,
+  deleteRecipeById,
+} from "../controllers/recipe.controller";
 import logger from "../config/logger";
 import { Recipe } from "@prisma/client";
 
 const NAMESPACE = "Recipe Service";
 
-const router = express.Router();
+const router: Router = express.Router();
 
 router.get("/", async (req: Request, res: Response) => {
   return res.status(200).json({
@@ -14,15 +20,13 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 router.get("/recipes", async (req: Request, res: Response) => {
-  let recipes: Partial<Recipe>[];
-
   try {
-    if (req?.query?.search) {
-      recipes = await recipeController.searchByNameOrIngredient(
-        String(req.query.search)
-      );
+    let recipes: Partial<Recipe>[];
+
+    if (req.query.search) {
+      recipes = await searchByNameOrIngredient(String(req.query.search));
     } else {
-      recipes = await recipeController.getAllRecipes();
+      recipes = await getAllRecipes();
     }
 
     res.status(200).send(recipes);
@@ -37,7 +41,7 @@ router.get("/recipes", async (req: Request, res: Response) => {
 
 router.get("/recipes/:id", async (req: Request, res: Response) => {
   try {
-    const recipe = await recipeController.getRecipeById(req.params.id);
+    const recipe = await getRecipeById(req.params.id);
 
     res.status(200).send(recipe);
   } catch (error) {
@@ -52,9 +56,9 @@ router.get("/recipes/:id", async (req: Request, res: Response) => {
 router.post("/recipes", async (req: Request, res: Response) => {
   try {
     console.log(req.body);
-    await recipeController.addNewRecipe(req.body);
+    await addNewRecipe(req.body);
 
-    res.send(201);
+    res.sendStatus(201);
   } catch (error) {
     res.status(error.status ?? 500).send(error.message);
     logger.error(
@@ -66,9 +70,9 @@ router.post("/recipes", async (req: Request, res: Response) => {
 
 router.delete("/recipes/:id", async (req: Request, res: Response) => {
   try {
-    await recipeController.deleteRecipeById(req.params.id);
+    await deleteRecipeById(req.params.id);
 
-    res.send(204);
+    res.sendStatus(204);
   } catch (error) {
     res.status(error.status ?? 500).send(error.message);
     logger.error(

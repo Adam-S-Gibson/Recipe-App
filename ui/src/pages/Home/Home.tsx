@@ -11,8 +11,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
-import { SmallRecipeCard } from "../../components/SmallRecipeCard/SmallRecipeCard";
-import { LargeRecipeCard } from "../../components/LargeRecipeCard/LargeRecipeCard";
+import { SmallRecipeCard } from "../../components/SmallRecipeCard";
+import { LargeRecipeCard } from "../../components/LargeRecipeCard";
 import { debounce } from "lodash";
 import { Recipe } from "../../interfaces/Recipe";
 
@@ -22,11 +22,9 @@ export const Home = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   const populatePage = async () => {
-    fetch("http://localhost:3080/api/recipes")
-      .then((response) => response.json())
-      .then((data) => {
-        setRecipes(data);
-      });
+    const response = await fetch("http://localhost:3080/api/recipes");
+    const data = await response.json();
+    setRecipes(data);
   };
 
   useEffect(() => {
@@ -36,11 +34,11 @@ export const Home = () => {
   const onSearchInputChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    fetch(`http://localhost:3080/api/recipes?search=${e.target.value}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setRecipes(data);
-      });
+    const response = await fetch(
+      `http://localhost:3080/api/recipes?search=${e.target.value}`
+    );
+    const data = await response.json();
+    setRecipes(data);
   };
 
   const debouncedChangeHandler = useMemo(() => {
@@ -69,14 +67,14 @@ export const Home = () => {
           {recipes.map((item, i) => (
             <Box key={i}>
               {isLarge ? (
-                <SmallRecipeCard
+                <LargeRecipeCard
                   title={item.name}
                   rating={Math.floor(Math.random() * 5) + 1}
                   timeToCook={parseInt(item.time_to_make)}
                   id={item.id}
                 />
               ) : (
-                <LargeRecipeCard
+                <SmallRecipeCard
                   title={item.name}
                   rating={Math.floor(Math.random() * 5) + 1}
                   timeToCook={parseInt(item.time_to_make)}
