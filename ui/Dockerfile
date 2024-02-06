@@ -4,7 +4,7 @@ WORKDIR /usr/src/app/ui
 
 COPY package*.json ./
 
-RUN npm i
+RUN npm i --legacy-peer-deps
 
 EXPOSE 3000
 
