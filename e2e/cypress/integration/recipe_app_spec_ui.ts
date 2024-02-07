@@ -32,12 +32,8 @@ describe("Recipe UI tests", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000");
   });
-  it(`Given I have a new recipe
-      When I add the new recipe name
-      And ingredients
-      And measurements
-      And cooking method
-      Then the new recipe is saved for later`, () => {
+
+  it(`should save a new recipe when all details are provided`, () => {
     cy.get("#addRecipe").click();
     cy.get("#recipeName").type(recipe.name);
     cy.get("#recipePrepTime").type(recipe.prepTime);
@@ -58,11 +54,7 @@ describe("Recipe UI tests", () => {
     cy.contains(recipe.name).should("have.text", recipe.name);
   });
 
-  it(`Given I want to look for a recipe
-      When I search by the name of the recipe
-      Then I find the recipe
-      And I can see the ingredients
-      And I can see the cooking methods`, () => {
+  it(`should find a recipe by name and display its details`, () => {
     cy.get("#searchBar").type("Chocolate");
     cy.contains(recipe.name).should("have.text", recipe.name);
 
@@ -80,11 +72,7 @@ describe("Recipe UI tests", () => {
     });
   });
 
-  it(`Given I want to look for a recipe by ingredients
-      When I search by the ingredient of the recipe
-      Then I find the recipe
-      And I can see the ingredients
-      And I can see the cooking methods`, () => {
+  it(`should find a recipe by ingredient and display its details`, () => {
     cy.get("#searchBar").type("Eggs");
     cy.contains(recipe.name).should("have.text", recipe.name);
 
@@ -102,11 +90,7 @@ describe("Recipe UI tests", () => {
     });
   });
 
-  it(`Given I want to remove a recipe
-      When I search for the recipe by name
-      Then I find the recipe
-      and I can see the recipe
-      I am able to delete the recipe`, () => {
+  it(`should remove a recipe when delete button is clicked`, () => {
     cy.get("#viewRecipeButton").first().click();
     cy.get("#removeButton").click();
     cy.get("#deleteButton").click();

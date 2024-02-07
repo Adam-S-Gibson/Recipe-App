@@ -4,12 +4,12 @@
   "description": "The E2E suite Recipe Book",
   "scripts": {
     "postinstall": "npx cypress install",
-    "e2e": "npx cypress open"
+    "test": "npx cypress run"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.0",
-    "cypress": "^9.2.0",
-    "jest": "^27.4.7",
+    "@types/jest": "27.4.0",
+    "cypress": "9.2.0",
+    "jest": "27.4.7",
     "typescript": "^4.5.4"
   }
 }
