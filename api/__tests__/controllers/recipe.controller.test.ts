@@ -4,6 +4,7 @@ import {
   getRecipeById,
   deleteRecipeById,
   searchByNameOrIngredient,
+  updateRecipeById,
 } from "../../controllers/recipe.controller";
 
 import { Recipe } from "@prisma/client";
@@ -167,15 +168,44 @@ describe("Prisma db operation tests", () => {
     });
   });
 
+  describe("updateRecipeById", () => {
+    test("should update a recipe by id", async () => {
+      const updatedRecipe = {
+        name: "updated apple pie",
+        time_to_make: "15",
+        prep_time: "7",
+        ingredients: [
+          {
+            name: "apples",
+            amount: "300g",
+          },
+        ],
+        steps: [
+          {
+            description: "Put all the updated apples in",
+          },
+        ],
+      };
+
+      await expect(updateRecipeById(id, updatedRecipe)).resolves.toEqual({
+        id: expect.any(String),
+        name: "updated apple pie",
+        time_to_make: "15",
+        prep_time: "7",
+        created_at: expect.any(Date),
+      });
+    });
+  });
+
   describe("deleteRecipeById", () => {
     test("should delete a record", async () => {
       const result = await deleteRecipeById(id);
 
       expect(result).toEqual({
         id: expect.any(String),
-        name: "apple pie",
-        time_to_make: "10",
-        prep_time: "5",
+        name: "updated apple pie",
+        time_to_make: "15",
+        prep_time: "7",
         created_at: expect.any(Date),
       });
     });
