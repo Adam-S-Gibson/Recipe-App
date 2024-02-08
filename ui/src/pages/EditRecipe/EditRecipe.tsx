@@ -86,7 +86,7 @@ export const EditRecipe = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    fetch(`http://localhost:3080/api/recipes/${id}`)
+    fetch(`http://localhost:3080/api/recipe/${id}`)
       .then((response) => response.json())
       .then((data) => dispatch({ type: "SET_RECIPE", payload: data }));
   }, [id]);

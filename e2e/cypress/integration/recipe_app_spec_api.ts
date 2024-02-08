@@ -31,7 +31,7 @@ describe("Express API tests", () => {
 
   it(`Should be able to get an entry by it's ID`, () => {
     cy.request(`http://localhost:3080/api/recipes`).then((res) => {
-      cy.request(`http://localhost:3080/api/recipes/${res.body[0].id}`).then(
+      cy.request(`http://localhost:3080/api/recipe/${res.body[0].id}`).then(
         (res) => {
           expect(res.body.name).to.equal("apple pie");
         }
@@ -43,7 +43,7 @@ describe("Express API tests", () => {
     cy.request(`http://localhost:3080/api/recipes`).then((res) => {
       cy.request(
         "DELETE",
-        `http://localhost:3080/api/recipes/${res.body[0].id}`
+        `http://localhost:3080/api/recipe/${res.body[0].id}`
       ).then((res) => {
         expect(res.status).to.equal(204);
       });

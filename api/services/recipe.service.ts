@@ -40,7 +40,7 @@ router.get("/recipes", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/recipes/:id", async (req: Request, res: Response) => {
+router.get("/recipe/:id", async (req: Request, res: Response) => {
   try {
     const recipe = await getRecipeById(req.params.id);
 

@@ -26,7 +26,7 @@ export const ViewRecipe = () => {
   const [recipe, setRecipe] = useState<Recipe>();
 
   const populatePage = async (id: string) => {
-    fetch(`http://localhost:3080/api/recipes/${id}`)
+    fetch(`http://localhost:3080/api/recipe/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setRecipe(data);
