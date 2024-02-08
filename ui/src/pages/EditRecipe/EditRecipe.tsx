@@ -14,23 +14,38 @@ import {
 } from "@chakra-ui/react";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useReducer } from "react";
-import { useHistory } from "react-router-dom";
+import { useEffect, useReducer } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { Ingredients } from "../../interfaces/Ingredients";
 import { Steps } from "../../interfaces/Steps";
 
-type State = {
-  recipeName: string;
-  recipeCookTime: string;
-  recipePrepTime: string;
-  recipeIngredientName: string;
-  recipeIngredientAmount: string;
-  recipeIngredients: Ingredients[];
-  recipeSteps: Steps[];
-  recipeStepDescription: string;
+interface Recipe {
+  name: string;
+  time_to_make: string;
+  prep_time: string;
+  ingredients: Ingredients[];
+  steps: Steps[];
+}
+
+interface State extends Recipe {
+  ingredientName: string;
+  ingredientAmount: string;
+  stepDescription: string;
+}
+
+const initialState: State = {
+  name: "",
+  time_to_make: "",
+  prep_time: "",
+  ingredients: [],
+  steps: [],
+  ingredientName: "",
+  ingredientAmount: "",
+  stepDescription: "",
 };
 
 type Action =
+  | { type: "SET_RECIPE"; payload: Object }
   | { type: "SET_RECIPE_NAME"; payload: string }
   | { type: "SET_RECIPE_COOK_TIME"; payload: string }
   | { type: "SET_RECIPE_PREP_TIME"; payload: string }
@@ -40,70 +55,75 @@ type Action =
   | { type: "SET_RECIPE_STEPS"; payload: Steps[] }
   | { type: "SET_RECIPE_STEP_DESCRIPTION"; payload: string };
 
-const initialState: State = {
-  recipeName: "",
-  recipeCookTime: "",
-  recipePrepTime: "",
-  recipeIngredientName: "",
-  recipeIngredientAmount: "",
-  recipeIngredients: [],
-  recipeSteps: [],
-  recipeStepDescription: "",
-};
-
 function reducer(state: State, action: Action): State {
   switch (action.type) {
+    case "SET_RECIPE":
+      return { ...state, ...action.payload };
     case "SET_RECIPE_NAME":
-      return { ...state, recipeName: action.payload };
+      return { ...state, name: action.payload };
     case "SET_RECIPE_COOK_TIME":
-      return { ...state, recipeCookTime: action.payload };
+      return { ...state, time_to_make: action.payload };
     case "SET_RECIPE_PREP_TIME":
-      return { ...state, recipePrepTime: action.payload };
+      return { ...state, prep_time: action.payload };
     case "SET_RECIPE_INGREDIENT_NAME":
-      return { ...state, recipeIngredientName: action.payload };
+      return { ...state, ingredientName: action.payload };
     case "SET_RECIPE_INGREDIENT_AMOUNT":
-      return { ...state, recipeIngredientAmount: action.payload };
+      return { ...state, ingredientAmount: action.payload };
     case "SET_RECIPE_INGREDIENTS":
-      return { ...state, recipeIngredients: action.payload };
-    case "SET_RECIPE_STEPS":
-      return { ...state, recipeSteps: action.payload };
+      return { ...state, ingredients: action.payload };
     case "SET_RECIPE_STEP_DESCRIPTION":
-      return { ...state, recipeStepDescription: action.payload };
+      return { ...state, stepDescription: action.payload };
+    case "SET_RECIPE_STEPS":
+      return { ...state, steps: action.payload };
     default:
       return state;
   }
 }
 
-export const AddNewRecipe = () => {
+export const EditRecipe = () => {
   const pageHistory = useHistory();
+  const { id } = useParams<{ id: string }>();
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    fetch(`http://localhost:3080/api/recipes/${id}`)
+      .then((response) => response.json())
+      .then((data) => dispatch({ type: "SET_RECIPE", payload: data }));
+  }, [id]);
 
   const SubmitRecipe = async () => {
     if (
-      state.recipeName === "" ||
-      state.recipeCookTime === "" ||
-      state.recipeIngredients?.length === 0 ||
-      state.recipeSteps?.length === 0
+      state.name === "" ||
+      state.time_to_make === "" ||
+      state.ingredients?.length === 0 ||
+      state.steps?.length === 0
     ) {
       return;
     }
 
-    fetch("http://localhost:3080/api/recipes", {
-      method: "POST",
+    const recipeToSend = {
+      name: state.name,
+      time_to_make: state.time_to_make,
+      prep_time: state.prep_time,
+      ingredients: state.ingredients.map(({ name, amount }) => ({
+        name,
+        amount,
+      })),
+      steps: state.steps.map(({ description }) => ({ description })),
+    };
+
+    const response = await fetch(`http://localhost:3080/api/recipe/${id}`, {
+      method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        name: state.recipeName,
-        time_to_make: state.recipeCookTime,
-        prep_time: state.recipePrepTime,
-        ingredients: state.recipeIngredients,
-        steps: state.recipeSteps,
-      }),
-    }).then(() => {
-      pageHistory.push("/");
+      body: JSON.stringify(recipeToSend),
     });
+
+    if (response.ok) {
+      pageHistory.push(`/view-recipe/${id}`);
+    }
   };
 
   return (
@@ -114,7 +134,7 @@ export const AddNewRecipe = () => {
         gap="2"
         paddingBottom="2"
       >
-        <Heading> Add Recipe</Heading>
+        <Heading> Edit Recipe</Heading>
         <Spacer></Spacer>
         <Button onClick={() => pageHistory.push("/")}>Back</Button>
       </Flex>
@@ -124,7 +144,7 @@ export const AddNewRecipe = () => {
           mt={2}
           id="recipeName"
           placeholder={"Name of Recipe"}
-          value={state.recipeName}
+          value={state.name}
           onChange={(event) =>
             dispatch({ type: "SET_RECIPE_NAME", payload: event.target.value })
           }
@@ -132,10 +152,8 @@ export const AddNewRecipe = () => {
         <Input
           mt={2}
           id="recipePrepTime"
-          value={state.recipePrepTime}
-          isInvalid={
-            isNaN(parseInt(state.recipePrepTime)) && state.recipePrepTime !== ""
-          }
+          value={state.prep_time}
+          isInvalid={isNaN(parseInt(state.prep_time)) && state.prep_time !== ""}
           placeholder={"Prep time? (mins)"}
           onChange={(event) =>
             dispatch({
@@ -147,9 +165,9 @@ export const AddNewRecipe = () => {
         <Input
           mt={2}
           id="recipeCookTime"
-          value={state.recipeCookTime}
+          value={state.time_to_make}
           isInvalid={
-            isNaN(parseInt(state.recipeCookTime)) && state.recipeCookTime !== ""
+            isNaN(parseInt(state.time_to_make)) && state.time_to_make !== ""
           }
           placeholder={"Make time? (mins)"}
           onChange={(event) =>
@@ -162,9 +180,9 @@ export const AddNewRecipe = () => {
       </SimpleGrid>
       <Heading mt={2}>Ingredients</Heading>
       <Divider my={2} />
-      {state.recipeIngredients ? (
+      {state.ingredients ? (
         <UnorderedList mt={2}>
-          {state.recipeIngredients.map((item, index) => (
+          {state.ingredients.map((item: Ingredients, index: number) => (
             <Flex key={`${item}_${index}`}>
               <ListItem mt={2}>
                 {item.name}, {item.amount}
@@ -174,7 +192,7 @@ export const AddNewRecipe = () => {
                 mb={2}
                 maxW="max-content"
                 onClick={() => {
-                  const newIngredients = [...state.recipeIngredients];
+                  const newIngredients = [...state.ingredients];
                   newIngredients.splice(index, 1);
                   dispatch({
                     type: "SET_RECIPE_INGREDIENTS",
@@ -195,7 +213,7 @@ export const AddNewRecipe = () => {
           mt={2}
           id="recipeIngredientName"
           placeholder={"Name of ingredient"}
-          value={state.recipeIngredientName}
+          value={state.ingredientName}
           onChange={(event) =>
             dispatch({
               type: "SET_RECIPE_INGREDIENT_NAME",
@@ -207,7 +225,7 @@ export const AddNewRecipe = () => {
           mt={2}
           id="recipeIngredientAmount"
           placeholder={"Amount"}
-          value={state.recipeIngredientAmount}
+          value={state.ingredientAmount}
           onChange={(event) =>
             dispatch({
               type: "SET_RECIPE_INGREDIENT_AMOUNT",
@@ -219,18 +237,14 @@ export const AddNewRecipe = () => {
           my={2}
           id="addIngredient"
           disabled={
-            state.recipeIngredientName === "" ||
-            state.recipeIngredientAmount === ""
+            state.ingredientName === "" || state.ingredientAmount === ""
           }
           onClick={() => {
             dispatch({
               type: "SET_RECIPE_INGREDIENTS",
               payload: [
-                ...(state.recipeIngredients ?? []),
-                {
-                  name: state.recipeIngredientName,
-                  amount: state.recipeIngredientAmount,
-                },
+                ...state.ingredients,
+                { name: state.ingredientName, amount: state.ingredientAmount },
               ],
             });
             dispatch({ type: "SET_RECIPE_INGREDIENT_NAME", payload: "" });
@@ -243,9 +257,9 @@ export const AddNewRecipe = () => {
 
       <Heading mt={2}>Instructions</Heading>
       <Divider />
-      {state.recipeSteps ? (
+      {state.steps ? (
         <OrderedList mt={2}>
-          {state.recipeSteps.map((item, index) => (
+          {state.steps.map((item: Steps, index: number) => (
             <Flex key={`${item}_${index}`}>
               <ListItem mt={2} key={`${item}_${index}`}>
                 {item.description}
@@ -254,7 +268,7 @@ export const AddNewRecipe = () => {
               <Button
                 mb={2}
                 onClick={() => {
-                  const newSteps = [...state.recipeSteps];
+                  const newSteps = [...state.steps];
                   newSteps.splice(index, 1);
                   dispatch({ type: "SET_RECIPE_STEPS", payload: newSteps });
                 }}
@@ -271,7 +285,7 @@ export const AddNewRecipe = () => {
         <Input
           mt={2}
           id="recipeStepDescription"
-          value={state.recipeStepDescription}
+          value={state.stepDescription}
           placeholder={"What do we do next?"}
           onChange={(event) =>
             dispatch({
@@ -283,14 +297,11 @@ export const AddNewRecipe = () => {
         <Button
           my={2}
           id="addStep"
-          disabled={state.recipeStepDescription === ""}
+          disabled={state.stepDescription === ""}
           onClick={() => {
             dispatch({
               type: "SET_RECIPE_STEPS",
-              payload: [
-                ...(state.recipeSteps ?? []),
-                { description: state.recipeStepDescription },
-              ],
+              payload: [...state.steps, { description: state.stepDescription }],
             });
             dispatch({ type: "SET_RECIPE_STEP_DESCRIPTION", payload: "" });
           }}
@@ -300,7 +311,7 @@ export const AddNewRecipe = () => {
       </SimpleGrid>
       <Divider my={2} />
       <Button id="submit" mt={7} float="right" onClick={SubmitRecipe}>
-        Submit Recipe
+        Update Recipe
       </Button>
     </Box>
   );

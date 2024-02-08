@@ -5,6 +5,7 @@ import {
   getRecipeById,
   addNewRecipe,
   deleteRecipeById,
+  updateRecipeById,
 } from "../controllers/recipe.controller";
 import logger from "../config/logger";
 import { Recipe } from "@prisma/client";
@@ -68,7 +69,21 @@ router.post("/recipes", async (req: Request, res: Response) => {
   }
 });
 
-router.delete("/recipes/:id", async (req: Request, res: Response) => {
+router.put("/recipe/:id", async (req: Request, res: Response) => {
+  try {
+    await updateRecipeById(req.params.id, req.body);
+
+    res.sendStatus(204);
+  } catch (error) {
+    res.status(error.status ?? 500).send(error.message);
+    logger.error(
+      NAMESPACE,
+      `METHOD - [${req.method}], URL - [${req.url}], IP - [${req.socket.remoteAddress}], STATUS - [${res.statusCode}]`
+    );
+  }
+});
+
+router.delete("/recipe/:id", async (req: Request, res: Response) => {
   try {
     await deleteRecipeById(req.params.id);
 

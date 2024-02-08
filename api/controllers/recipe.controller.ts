@@ -116,6 +116,46 @@ export const addNewRecipe = async (recipe: CreateRecipeInput) => {
   }
 };
 
+export const updateRecipeById = async (
+  id: string,
+  recipe: CreateRecipeInput
+) => {
+  if (
+    !recipe.name ||
+    !recipe.time_to_make ||
+    !recipe.prep_time ||
+    !recipe.ingredients ||
+    !recipe.steps
+  ) {
+    throw new Error("Missing required fields");
+  }
+  try {
+    return await prisma.recipe.update({
+      where: { id: id },
+      data: {
+        name: recipe.name,
+        time_to_make: recipe.time_to_make,
+        prep_time: recipe.prep_time,
+        ingredients: {
+          deleteMany: {},
+          createMany: {
+            data: recipe.ingredients,
+          },
+        },
+        steps: {
+          deleteMany: {},
+          createMany: {
+            data: recipe.steps,
+          },
+        },
+      },
+    });
+  } catch (error) {
+    console.error(`Error updating recipe with id ${id}:`, error);
+    throw error;
+  }
+};
+
 export const deleteRecipeById = async (id: string) => {
   try {
     return await prisma.recipe.delete({

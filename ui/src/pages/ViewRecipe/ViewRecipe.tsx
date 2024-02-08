@@ -118,7 +118,13 @@ export const ViewRecipe = () => {
       ) : (
         <Text>Loading</Text>
       )}
-      <DeleteButtonAndModal id={id} />
+      <Box mt={5}>
+        <Button onClick={() => pageHistory.push(`/edit-recipe/${id}`)}>
+          {" "}
+          Edit{" "}
+        </Button>
+        <DeleteButtonAndModal id={id} />
+      </Box>
     </Box>
   );
 };

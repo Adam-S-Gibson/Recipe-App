@@ -3,6 +3,7 @@ import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { AddNewRecipe } from "./pages/AddNewRecipe/AddNewRecipe";
+import { EditRecipe } from "./pages/EditRecipe/EditRecipe";
 import { Error } from "./pages/Error/Error";
 import { Home } from "./pages/Home/Home";
 import { ViewRecipe } from "./pages/ViewRecipe/ViewRecipe";
@@ -20,11 +21,12 @@ const App = () => {
       </GridItem>
       <GridItem>
         <Router>
-          <Box mt={10}>
+          <Box mt={16}>
             <Switch>
               <Route exact path="/" component={Home} />
               <Route exact path="/add-recipe" component={AddNewRecipe} />
               <Route exact path="/view-recipe/:id" component={ViewRecipe} />
+              <Route exact path="/edit-recipe/:id" component={EditRecipe} />
               <Route path="*" component={Error} />
             </Switch>
           </Box>

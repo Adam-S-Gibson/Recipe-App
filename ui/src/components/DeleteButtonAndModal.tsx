@@ -22,7 +22,7 @@ export const DeleteButtonAndModal = ({ id }: DeleteButton) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const deleteRecipe = async (id: string) => {
-    fetch(`http://localhost:3080/api/recipes/${id}`, {
+    fetch(`http://localhost:3080/api/recipe/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",
